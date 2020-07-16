@@ -1,0 +1,1 @@
+dockerreg=hub.docker.com
