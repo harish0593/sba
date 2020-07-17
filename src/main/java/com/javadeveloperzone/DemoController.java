@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemoController {
     @RequestMapping(value = "hello")
     public String hello(){
-        return "Welcome to CI/CD of Spring boot Gradle Example keel CD commit changes example keel check";
+        return "Welcome to CI/CD of Spring boot Gradle Example keel CD commit changes CI part";
     }
 }
