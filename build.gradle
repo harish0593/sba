@@ -4,6 +4,8 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")  // spring boot gradle plugin will used for generate jar
+        classpath 'org.hidetake:gradle-ssh-plugin:1.3.0'
+    	classpath 'de.undercouch:gradle-download-task:2.1.0'
     }
 }
 
@@ -15,6 +17,7 @@ description = "Spring boot Gradle Example"
 
 apply plugin: 'java'                                // plugin for java
 apply plugin: 'org.springframework.boot'            // plugin for spring boot framework
+apply plugin: 'ssh'
 
 jar {
     baseName = 'spring-boot-gradle-example'             // jar file name
@@ -30,7 +33,61 @@ targetCompatibility = 1.8
 
 group 'spring-boot-demo'
 version '1.0-SNAPSHOT'
+ssh.settings {
+	knownHosts = allowAnyHosts
+	// ${System.getenv('HOME')}/.ssh/known_hosts
+	//knownHosts = file('/var/lib/jenkins/.ssh/known_hosts')
+}
 
+remotes {
+    serverone {
+		host = '3.21.244.111'
+		port = 22
+        user = 'root'
+        password = 'root123'
+    }
+}
+
+task dockerStatus << {
+  logger.lifecycle("Checking whether container is running")
+   ssh.run {
+   session(remotes.serverone) {
+         def conexists = "true"
+         def constatus = 'sudo docker inspect --format="{{.State.Running}}" $containername'
+         conexists = execute(constatus)
+         if (conexists == "true" ) {
+          logger.lifecycle("Removing Old Container")
+                   execute('sudo docker stop $containername')
+                 conexit = execute(constatus)
+                  if (conexit == "false" ) {
+          logger.lifecycle("Container has been stopped successfully")
+            execute ('sudo docker rm $containername')
+                logger.lifecycle("Container has been removed successfully")
+          }
+         }
+                 else {
+                  logger.lifecycle("Container doesn't exists")
+
+                  }
+                }
+            }
+     }
+     
+     def sshexecute(def server, def cmd) {
+    logger.lifecycle("Executing '$cmd'  ...")
+    ssh.run {
+    session(remotes.deploymentServer) {
+    	execute(cmd, pty: true){ result -> println result }
+    	}
+    }
+}
+
+task wrapper(type: Wrapper) {
+    description = "Generates a new Gradle Wrapper"
+    group = "Build"
+    gradleVersion = '2.4'
+    distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+}
 
 
 
