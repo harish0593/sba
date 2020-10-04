@@ -52,9 +52,9 @@ task dockerStatus << {
   logger.lifecycle("Checking whether container is running")
    ssh.run {
    session(remotes.serverone) {
-         execute('sudo docker inspect --format="{{.State.Running}}" $containername')
+         execute('sudo docker inspect --format="{{.State.Running}}" busy')
          def conexists = "true"
-         def constatus = 'sudo docker inspect --format="{{.State.Running}}" $containername'
+         def constatus = 'sudo docker inspect --format="{{.State.Running}}" busy'
 	 
          conexists = execute(constatus)
          if (conexists == "true" ) {
