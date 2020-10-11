@@ -50,7 +50,7 @@ remotes {
 
 task dockerStatus << {
   logger.lifecycle("Checking whether container is running")
-  def conname = $containername
+  def conname = \"${containername}\"
   logger.lifecycle("$conname")
    ssh.run {
    session(remotes.serverone) {
